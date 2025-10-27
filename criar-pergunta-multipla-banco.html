@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Criar pergunta múltipla</title>
+  </head>
+  <script>
+    function criarPerguntaMultipla() {
+      let codigo = document.getElementById("codigo").value;
+      let pergunta = document.getElementById("pergunta").value;
+      let opc1 = document.getElementById("opc1").value;
+      let opc2 = document.getElementById("opc2").value;
+      let opc3 = document.getElementById("opc3").value;
+      let opc4 = document.getElementById("opc4").value;
+      let opc5 = document.getElementById("opc5").value;
+      let resposta = document.getElementById("resposta").value;
+
+      let xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          let resposta = JSON.parse(this.responseText);
+          document.getElementById("mensagem").innerHTML = resposta;
+        } else if (this.readyState < 4) {
+          document.getElementById("mensagem").innerHTML = "Enviando...";
+        } else {
+          document.getElementById("mensagem").innerHTML =
+            "Erro: " + this.status;
+        }
+      };
+
+      xmlhttp.open(
+        "GET",
+        "http://localhost/3daw-av1-bancoDeDados/criar-pergunta-multipla-banco.php?pergunta=" +
+          pergunta +
+          "&opc1=" +
+          opc1 +
+          "&opc2=" +
+          opc2 +
+          "&opc3=" +
+          opc3 +
+          "&opc4=" +
+          opc4 +
+          "&opc5=" +
+          opc5 +
+          "&resposta=" +
+          resposta +
+          "&codigo=" +
+          codigo
+      );
+      xmlhttp.send();
+    }
+  </script>
+  <body>
+    <form>
+      <input type="text" name="codigo" placeholder="Código" id="codigo" />
+      <input type="text" name="pergunta" placeholder="Pergunta" id="pergunta" />
+      <input type="text" name="opc1" placeholder="A" id="opc1" />
+      <input type="text" name="opc2" placeholder="B" id="opc2" />
+      <input type="text" name="opc3" placeholder="C" id="opc3" />
+      <input type="text" name="opc4" placeholder="D" id="opc4" />
+      <input type="text" name="opc5" placeholder="E" id="opc5" />
+      <input type="text" name="resposta" placeholder="Resposta" id="resposta" />
+      <input
+        type="button"
+        value="Cadastrar"
+        onclick="criarPerguntaMultipla()"
+      />;
+    </form>
+    <p id="mensagem"></p>
+    <br /><br /><br /><br />
+    <a href="opcoes.html">Opções</a>
+  </body>
+</html>
