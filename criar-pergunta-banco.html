@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Criar pergunta texto</title>
+  </head>
+  <script>
+    function criarPergunta() {
+      let pergunta = document.getElementById("pergunta").value;
+      let resposta = document.getElementById("resposta").value;
+      let codigo = document.getElementById("codigo").value;
+
+      let xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+            let resposta = JSON.parse(this.responseText);
+          document.getElementById("mensagem").innerHTML = resposta;
+        } else if (this.readyState < 4) {
+          document.getElementById("mensagem").innerHTML = "Enviando...";
+        } else {
+          document.getElementById("mensagem").innerHTML =
+            "Erro: " + this.status;
+        }
+      };
+
+      xmlhttp.open(
+        "GET",
+        "http://localhost/3daw-av1-bancoDeDados/criar-pergunta-banco.php?pergunta=" +
+          pergunta +
+          "&resposta=" +
+          resposta +
+          "&codigo=" +
+          codigo
+      );
+      xmlhttp.send();
+    }
+  </script>
+  <body>
+    <form>
+      <input type="text" name="codigo" placeholder="Código" id="codigo" />
+      <input type="text" name="pergunta" placeholder="Pergunta" id="pergunta" />
+      <input type="text" name="resposta" placeholder="Resposta" id="resposta" />
+      <input type="button" value="Cadastrar" onclick="criarPergunta()" />
+    </form>
+    <p id="mensagem"></p>
+    <br /><br /><br /><br />
+    <a href="opcoes.html">Opções</a>
+  </body>
+</html>
