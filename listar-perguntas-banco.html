@@ -23,44 +23,44 @@
           perguntasTexto.forEach((pergunta) => {
 
             const codigo = pergunta[0];
-            const textoPergunta = pergunta[1];
-            const textoResposta = pergunta[2];
+            const perguntad = pergunta[1];
+            const resposta = pergunta[2];
 
-            const linha = `
+            const perguntaNova = `
                 <tr>
-                    <td>${textoPergunta}</td>
-                    <td>${textoResposta}</td>
-                    <td><button>Excluir</button></td>
+                    <td>${perguntad}</td>
+                    <td>${resposta}</td>
+                    <td><button onclick="excluirPergunta('${codigo}', 'texto')">Excluir</button></td>
                     <td><a href="alterar-pergunta-texto.php?pergunta=${codigo}">Alterar</a></td>
                     <td><a href="listar-uma-pergunta.php?pergunta=${codigo}&tipo=texto">Ver</a></td>
                 </tr>
             `;
-            tabelaTexto.innerHTML += linha;
+            tabelaTexto.innerHTML += perguntaNova;
           });
 
           const perguntasMultipla = data[1];
           perguntasMultipla.forEach((pergunta) => {
-            const id_questao = pergunta[0];
-            const textoPergunta = pergunta[1];
+            const codigo = pergunta[0];
+            const perguntam = pergunta[1];
             const opc1 = pergunta[2];
             const opc2 = pergunta[3];
             const opc3 = pergunta[4];
             const opc4 = pergunta[5];
             const correta = pergunta[6];
-            const linha = `
+            const perguntaNova = `
                 <tr>
-                    <td>${textoPergunta}</td>
+                    <td>${perguntam}</td>
                     <td>${opc1}</td>
                     <td>${opc2}</td>
                     <td>${opc3}</td>
                     <td>${opc4}</td>
                     <td>${correta}</td>
-                    <td><button>Excluir</button></td>
-                    <td><a href="alterar-pergunta-multipla.php?pergunta=${id_questao}">Alterar</a></td>
-                    <td><a href="listar-uma-pergunta.php?pergunta=${id_questao}&tipo=multipla">Ver</a></td>
+                    <td><button onclick="excluirPergunta('${codigo}', 'multipla')">Excluir</button></td>
+                    <td><a href="alterar-pergunta-multipla.php?pergunta=${codigo}">Alterar</a></td>
+                    <td><a href="listar-uma-pergunta.php?pergunta=${codigo}&tipo=multipla">Ver</a></td>
                 </tr>
             `;
-            tabelaMultipla.innerHTML += linha;
+            tabelaMultipla.innerHTML += perguntaNova;
           });
         } else if (this.readyState == 4) {
           console.error("Erro Status: ", this.status);
@@ -71,6 +71,28 @@
       xmlhttp.open("GET", "listar-perguntas-banco.php");
       xmlhttp.send();
     }
+
+    function excluirPergunta(codigo, tipo) {
+        let tipoTexto = (tipo === 'texto') ? 'discursiva' : 'múltipla escolha';
+        if ( ! confirm(`Tem certeza que quer excluir a pergunta ${codigo} (${tipoTexto})?`) ) {
+            return; 
+        }
+
+        let xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                alert(this.responseText);
+                trazerPerguntas(); 
+            } else if (this.readyState == 4) {
+                alert("Erro ao tentar excluir. Status: " + this.status);
+            }
+        };
+
+        xmlhttp.open("GET", "excluir-pergunta-banco.php?codigo=" + codigo + "&tipo=" + tipo, true);
+        xmlhttp.send();
+    }
+    
 
     window.onload = trazerPerguntas;
   </script>
