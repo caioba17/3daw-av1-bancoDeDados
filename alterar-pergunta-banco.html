@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Alterar Pergunta</title>
+</head>
+<body>
+  <h2>Alterar Pergunta</h2>
+
+  <label for="codigo">Código da pergunta:</label><br>
+  <input type="text" id="codigo" required>
+  <button onclick="buscarPergunta()">Buscar</button>
+
+  <br><br>
+  
+  <div id="form-edicao" style="display: none;">
+    <form onsubmit="salvarPergunta()"> 
+      <input type="hidden" id="form-codigo" name="codigo">
+      
+      <label for="form-texto">Nova pergunta:</label><br>
+      <textarea id="form-texto" name="pergunta" rows="4" cols="50"></textarea><br><br>
+      
+      <label for="form-resposta">Nova resposta:</label><br>
+      <textarea id="form-resposta" name="resposta" rows="4" cols="50"></textarea><br><br>
+
+      <button type="submit">Salvar</button>
+    </form>
+  </div>
+
+  <script>
+    function buscarPergunta() {
+      const codigo = document.getElementById("codigo").value;
+      if (!codigo) {
+        alert("Informe o código da pergunta.");
+        return;
+      }
+
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.open("GET", "alterar-pergunta-banco.php?codigo=" + codigo);
+
+      xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState === 4) {
+          if (xmlhttp.status === 200) {
+            const respostaJson = JSON.parse(xmlhttp.responseText);
+            if (respostaJson.erro) {
+              alert(respostaJson.erro);
+            } else {
+              document.getElementById("form-codigo").value = respostaJson[0];
+              document.getElementById("form-texto").value = respostaJson[1];
+              document.getElementById("form-resposta").value = respostaJson[2];
+              document.getElementById("form-edicao").style.display = "block";
+            }
+          } else {
+            alert("Erro ao buscar: " + xmlhttp.status);
+          }
+        }
+      };
+      xmlhttp.send();
+    }
+   function salvarPergunta() {
+    
+      const codigo = document.getElementById("form-codigo").value;
+      const pergunta = document.getElementById("form-texto").value;
+      const resposta = document.getElementById("form-resposta").value;
+
+      const xmlhttp = new XMLHttpRequest();
+      xmlhttp.open("POST", "alterar-pergunta-banco.php", true); 
+      xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+      xmlhttp.onreadystatechange = function () {
+        if (xmlhttp.readyState === 4) {
+          if (xmlhttp.status === 200) {
+            alert(xmlhttp.responseText);
+            document.getElementById("form-edicao").style.display = "none";
+            document.getElementById("codigo").value = "";
+          } else {
+            alert("Erro ao salvar: " + xmlhttp.status);
+          }
+        }
+      };
+
+      const dados = "codigo=" + codigo + 
+                    "&pergunta=" + pergunta + 
+                    "&resposta=" + resposta;
+      
+      xmlhttp.send(dados);
+    }
+  </script>
+</body>
+</html>
