@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perguntas e Respostas</title>
+  </head>
+  <script>
+    function trazerPerguntas() {
+      let xmlhttp = new XMLHttpRequest();
+      const tabelaTexto = document.getElementById("corpo-tabela-texto");
+      const tabelaMultipla = document.getElementById("corpo-tabela-multipla");
+
+      tabelaTexto.innerHTML = "";
+      tabelaMultipla.innerHTML = "";
+
+      xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          const data = JSON.parse(this.responseText);
+
+          const perguntasTexto = data[0];
+          
+          perguntasTexto.forEach((pergunta) => {
+
+            const codigo = pergunta[0];
+            const textoPergunta = pergunta[1];
+            const textoResposta = pergunta[2];
+
+            const linha = `
+                <tr>
+                    <td>${textoPergunta}</td>
+                    <td>${textoResposta}</td>
+                    <td><button>Excluir</button></td>
+                    <td><a href="alterar-pergunta-texto.php?pergunta=${codigo}">Alterar</a></td>
+                    <td><a href="listar-uma-pergunta.php?pergunta=${codigo}&tipo=texto">Ver</a></td>
+                </tr>
+            `;
+            tabelaTexto.innerHTML += linha;
+          });
+
+          const perguntasMultipla = data[1];
+          perguntasMultipla.forEach((pergunta) => {
+            const id_questao = pergunta[0];
+            const textoPergunta = pergunta[1];
+            const opc1 = pergunta[2];
+            const opc2 = pergunta[3];
+            const opc3 = pergunta[4];
+            const opc4 = pergunta[5];
+            const correta = pergunta[6];
+            const linha = `
+                <tr>
+                    <td>${textoPergunta}</td>
+                    <td>${opc1}</td>
+                    <td>${opc2}</td>
+                    <td>${opc3}</td>
+                    <td>${opc4}</td>
+                    <td>${correta}</td>
+                    <td><button>Excluir</button></td>
+                    <td><a href="alterar-pergunta-multipla.php?pergunta=${id_questao}">Alterar</a></td>
+                    <td><a href="listar-uma-pergunta.php?pergunta=${id_questao}&tipo=multipla">Ver</a></td>
+                </tr>
+            `;
+            tabelaMultipla.innerHTML += linha;
+          });
+        } else if (this.readyState == 4) {
+          console.error("Erro Status: ", this.status);
+          console.error("Erro Resposta: ", this.responseText);
+        }
+      };
+
+      xmlhttp.open("GET", "listar-perguntas-banco.php");
+      xmlhttp.send();
+    }
+
+    window.onload = trazerPerguntas;
+  </script>
+  <body>
+    <h3>Perguntas Texto</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Pergunta</th>
+          <th>Resposta</th>
+          <th>Excluir</th>
+          <th>Alterar</th>
+          <th>Ver</th>
+        </tr>
+      </thead>
+      <tbody id="corpo-tabela-texto"></tbody>
+    </table>
+
+    <br /><br />
+
+    <h3>Perguntas Múltipla Escolha</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Pergunta</th>
+          <th>Opção A</th>
+          <th>Opção B</th>
+          <th>Opção C</th>
+          <th>Opção D</th>
+          <th>Opção E</th>
+          <th>Gabarito</th>
+          <th>Excluir</th>
+          <th>Alterar</th>
+          <th>Ver</th>
+        </tr>
+      </thead>
+      <tbody id="corpo-tabela-multipla"></tbody>
+    </table>
+
+    <br /><br /><br /><br />
+    <a href="opcoes.html">Opções</a>
+  </body>
+</html>
