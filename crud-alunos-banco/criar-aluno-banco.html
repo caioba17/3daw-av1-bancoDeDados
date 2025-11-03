@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Criar Aluno</title>
+  </head>
+  <script>
+    function criarAluno() {
+      let nome = document.getElementById("nome").value;
+      let matricula = document.getElementById("matricula").value;
+      let email = document.getElementById("email").value;
+
+      let xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          let resposta = JSON.parse(this.responseText);
+          document.getElementById("mensagem").innerHTML = resposta;
+        } else if (this.readyState < 4) {
+          document.getElementById("mensagem").innerHTML = "Enviando...";
+        } else {
+          document.getElementById("mensagem").innerHTML =
+            "Erro: " + this.status;
+        }
+      };
+
+      xmlhttp.open(
+        "GET",
+        "http://localhost/3daw-av1-bancoDeDados/crud-alunos-banco/criar-aluno-banco.php?nome=" + nome + "&matricula=" + matricula + "&email=" + email
+      );
+      xmlhttp.send();
+    }
+
+  </script>
+  <body>
+    <form>
+      <input type="text" name="nome" placeholder="Nome" id="nome" />
+      <input type="text" name="matricula" placeholder="Matrícula" id="matricula" />
+      <input type="text" name="email" placeholder="Email" id="email" />
+      <input type="button" value="Cadastrar" onclick="criarAluno()" />
+    </form>
+    <p id="mensagem"></p>
+    <br /><br /><br /><br />
+    <a href="opcoes.html">Opções</a>
+  </body>
+</html>
