@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Alunos</title>
+</head>
+<script>
+    function trazerAlunos() {
+        let xmlhttp = new XMLHttpRequest();
+        const tabelaAlunos = document.getElementById("corpo-tabela-alunos");
+
+        tabelaAlunos.innerHTML = "";
+
+        xmlhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                const data = JSON.parse(this.responseText);
+                console.log(data);
+                const alunos = data;
+                
+                alunos.forEach((aluno) => {
+
+                    const [nome, matricula, email] = aluno;
+
+                    const alunoNovo = `
+                        <tr>
+                            <td>${nome}</td>
+                            <td>${matricula}</td>
+                            <td>${email}</td>
+                            <td><button onclick="excluirAluno('${matricula}')">Excluir</button></td>
+                        </tr>
+                    `;
+                    tabelaAlunos.innerHTML += alunoNovo;
+                });
+            } else if (this.readyState == 4) {
+                console.error("Erro Status: ", this.status);
+                console.error("Erro Resposta: ", this.responseText);
+            }
+        };
+
+        xmlhttp.open("GET", "listar-alunos-banco.php");
+        xmlhttp.send();
+    }
+
+    function excluirAluno(matricula) {
+        if ( ! confirm(`Tem certeza que quer excluir o aluno ${matricula}?`) ) {
+            return; 
+        }
+
+        let xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                alert(this.responseText);
+                trazerAlunos(); 
+            } else if (this.readyState == 4) {
+                alert("Erro ao tentar excluir. Status: " + this.status);
+            }
+        };
+
+        xmlhttp.open("GET", "excluir-aluno-banco.php?matricula=" + matricula, true);
+        xmlhttp.send();
+    }
+    
+    window.onload = trazerAlunos;
+</script>
+<body>
+    <h3>Alunos</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Matricula</th>
+                <th>Email</th>
+                <th>Excluir</th>
+            </tr>
+        </thead>
+        <tbody id="corpo-tabela-alunos"></tbody>
+    </table>
+
+</body>
+</html>
