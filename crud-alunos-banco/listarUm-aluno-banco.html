@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Aluno</title>
+</head>
+<body>
+    <h2>Buscar Aluno</h2>
+
+    <label for="matricula-busca">Matricula do aluno:</label><br>
+    <input type="text" id="matricula-busca" required>
+    <button onclick="buscarAluno()">Buscar</button>
+
+    <div id="resultado-aluno" style="display: none;"></div>
+
+    <script>
+    function buscarAluno() {
+        const matricula = document.getElementById("matricula-busca").value;
+        const aluno = document.getElementById("resultado-aluno");
+
+        const xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", "listarUm-aluno-banco.php?matricula=" + matricula);
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState === 4) {
+                if (xmlhttp.status === 200) {
+                    const respostaJson = JSON.parse(xmlhttp.responseText);
+                    if (respostaJson.erro) {
+                        aluno.innerHTML = `<p>${respostaJson.erro}</p>`;
+                        aluno.style.display = "block";
+                    } else {
+                        const aluno_dados = respostaJson;                   
+                        const aluno_geral = `
+                            <h4>Aluno Encontrado:</h4>
+                            <p><strong>Matrícula:</strong> ${aluno_dados[0]}</p>
+                            <p><strong>Nome:</strong> ${aluno_dados[1]}</p>
+                            <p><strong>Email:</strong> ${aluno_dados[2]}</p>
+                        `;
+                        aluno.innerHTML = aluno_geral;
+                        aluno.style.display = "block";
+                    }
+                } else {
+                    aluno.innerHTML = "<p>Erro ao buscar: " + xmlhttp.status + "</p>";
+                    aluno.style.display = "block";
+                }
+            }
+        };
+        xmlhttp.send();
+    }
+    </script>
+</body>
+</html>
