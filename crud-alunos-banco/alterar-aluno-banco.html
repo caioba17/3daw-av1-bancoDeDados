@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Alterar Aluno</title>
+</head>
+<body>
+    <h2>Alterar Aluno</h2>
+
+    <label for="matricula-busca">Matricula do aluno:</label><br>
+    <input type="text" id="matricula-busca" required>
+    <button onclick="buscarAluno()">Buscar</button>
+
+    <br><br>
+    
+    <div id="form-edicao" style="display: none;">
+        <form onsubmit="event.preventDefault(); salvarAluno();"> 
+            
+            <input type="hidden" id="form-matricula-original">
+            
+            <label for="form-nome">Novo nome:</label><br>
+            <input type="text" id="form-nome" name="nome" required><br><br>
+
+            <label for="form-matricula-nova">Nova matricula:</label><br>
+            <input type="text" id="form-matricula-nova" name="matricula-nova" required><br><br>
+
+            <label for="form-email">Novo email:</label><br>
+            <input type="email" id="form-email" name="email" required><br><br>
+
+            <button type="submit">Salvar</button>
+        </form>
+    </div>
+
+    <script>
+    function buscarAluno() {
+        const matricula = document.getElementById("matricula-busca").value;
+
+        const xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", "alterar-aluno-banco.php?matricula=" + matricula);
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState === 4) {
+                if (xmlhttp.status === 200) {
+                    const respostaJson = JSON.parse(xmlhttp.responseText);
+                    if (respostaJson.erro) {
+                        alert(respostaJson.erro);
+                    } else {
+                        document.getElementById("form-matricula-original").value = respostaJson[0];
+                        document.getElementById("form-matricula-nova").value = respostaJson[0];
+                        document.getElementById("form-nome").value = respostaJson[1];
+                        document.getElementById("form-email").value = respostaJson[2];
+                        document.getElementById("form-edicao").style.display = "block";
+                    }
+                } else {
+                    alert("Erro ao buscar: " + xmlhttp.status);
+                }
+            }
+        };
+        xmlhttp.send();
+    }
+
+    function salvarAluno() {
+        const matricula_original = document.getElementById("form-matricula-original").value;
+        const matricula_nova = document.getElementById("form-matricula-nova").value;
+        const nome = document.getElementById("form-nome").value;
+        const email = document.getElementById("form-email").value;
+
+        const xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("POST", "alterar-aluno-banco.php", true);
+        xmlhttp.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState === 4) {
+                if (xmlhttp.status === 200) {
+                    alert(xmlhttp.responseText);
+                    document.getElementById("form-edicao").style.display = "none";
+                    document.getElementById("matricula-busca").value = "";
+                } else {
+                    alert("Erro ao salvar: " + xmlhttp.status);
+                }
+            }
+        };
+
+        const dados = "matricula_original=" + matricula_original + 
+                      "&matricula_nova=" + matricula_nova + 
+                      "&nome=" + nome + 
+                      "&email=" + email;
+        
+        xmlhttp.send(dados);
+    }
+    </script>
+</body>
+</html>
